@@ -311,6 +311,10 @@
 	status = "okay";
 };
 
+&ohci1 {
+	status = "okay";
+};
+
 &pwm {
 	status = "okay";
 };
