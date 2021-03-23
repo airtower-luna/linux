@@ -2300,6 +2300,30 @@ static const struct panel_desc hannstar_hsd101pww2 = {
 	.connector_type = DRM_MODE_CONNECTOR_LVDS,
 };
 
+static const struct drm_display_mode hannstar_tqtm070cb501_mode = {
+	.clock = 33000,
+	.hdisplay = 800,
+	.hsync_start = 800 + 240,
+	.hsync_end = 800 + 240 + 30,
+	.htotal = 800 + 240 + 30 + 14, // -14
+	.vdisplay = 480,
+	.vsync_start = 480 + 35,
+	.vsync_end = 480 + 35 + 13,
+	.vtotal = 480 + 35 + 13 + 3, // -3
+};
+
+static const struct panel_desc hannstar_tqtm070cb501 = {
+	.modes = &hannstar_tqtm070cb501_mode,
+	.num_modes = 1,
+	.bpc = 6,
+	.size = {
+		.width = 164,
+		.height = 104,
+	},
+	.bus_format = MEDIA_BUS_FMT_RGB666_1X18,
+	.connector_type = DRM_MODE_CONNECTOR_DPI,
+};
+
 static const struct drm_display_mode hitachi_tx23d38vm0caa_mode = {
 	.clock = 33333,
 	.hdisplay = 800,
@@ -4462,6 +4486,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "hit,tx23d38vm0caa",
 		.data = &hitachi_tx23d38vm0caa
+	}, {
+		.compatible = "hannstar,tqtm070cb501",
+		.data = &hannstar_tqtm070cb501,
 	}, {
 		.compatible = "innolux,at043tn24",
 		.data = &innolux_at043tn24,
