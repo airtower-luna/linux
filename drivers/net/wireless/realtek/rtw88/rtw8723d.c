@@ -532,7 +532,7 @@ static u8 rtw8723d_iqk_check_rx_failed(struct rtw_dev *rtwdev,
 	return 0;
 }
 
-#define IQK_LTE_WRITE_VAL 0x0000ff00
+#define IQK_LTE_WRITE_VAL_8723D 0x0000ff00
 
 static void rtw8723d_iqk_one_shot(struct rtw_dev *rtwdev, bool tx,
 				  const struct rtw_8723d_iqk_cfg *iqk_cfg)
@@ -541,7 +541,7 @@ static void rtw8723d_iqk_one_shot(struct rtw_dev *rtwdev, bool tx,
 
 	/* enter IQK mode */
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, EN_IQK);
-	rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL);
+	rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL_8723D);
 
 	rtw_write32(rtwdev, REG_LTECOEX_CTRL, 0x800f0054);
 	mdelay(1);
@@ -841,14 +841,14 @@ void rtw8723d_iqk_rf_standby(struct rtw_dev *rtwdev, enum rtw_rf_path path)
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, EN_IQK);
 }
 
-#define ADDA_ON_VAL 0x03c00016
+#define ADDA_ON_VAL_8723D 0x03c00016
 
 static
 void rtw8723d_iqk_precfg_path(struct rtw_dev *rtwdev, enum rtw8723x_path path)
 {
 	if (path == PATH_S0) {
 		rtw8723d_iqk_rf_standby(rtwdev, RF_PATH_A);
-		rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL);
+		rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL_8723D);
 	}
 
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, EN_IQK);
@@ -857,7 +857,7 @@ void rtw8723d_iqk_precfg_path(struct rtw_dev *rtwdev, enum rtw8723x_path path)
 
 	if (path == PATH_S1) {
 		rtw8723d_iqk_rf_standby(rtwdev, RF_PATH_B);
-		rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL);
+		rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL_8723D);
 	}
 }
 
@@ -871,7 +871,7 @@ void rtw8723d_iqk_one_round(struct rtw_dev *rtwdev, s32 result[][IQK_NR], u8 t,
 	rtw_dbg(rtwdev, RTW_DBG_RFK,
 		"[IQK] IQ Calibration for 1T1R_S0/S1 for %d times\n", t);
 
-	rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL);
+	rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL_8723D);
 	rtw8723d_iqk_config_mac(rtwdev);
 	rtw_write32_mask(rtwdev, REG_CCK_ANT_SEL_11N, 0x0f000000, 0xf);
 	rtw_write32(rtwdev, REG_BB_RX_PATH_11N, 0x03a05611);
@@ -982,7 +982,7 @@ static void rtw8723d_phy_calibration(struct rtw_dev *rtwdev)
 
 	for (i = IQK_ROUND_0; i <= IQK_ROUND_2; i++) {
 		rtw8723x_iqk_config_path_ctrl(rtwdev);
-		rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL);
+		rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL_8723D);
 
 		rtw8723d_iqk_one_round(rtwdev, result, i, &backup);
 

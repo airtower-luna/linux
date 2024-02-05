@@ -1082,7 +1082,7 @@ static void rtw8703b_query_rx_desc(struct rtw_dev *rtwdev, u8 *rx_desc,
 	}
 }
 
-#define ADDA_ON_VAL 0x03c00014
+#define ADDA_ON_VAL_8703B 0x03c00014
 
 static
 void rtw8703b_iqk_config_mac(struct rtw_dev *rtwdev,
@@ -1094,7 +1094,7 @@ void rtw8703b_iqk_config_mac(struct rtw_dev *rtwdev,
 			   backup->mac8[i] & (~BIT(3)));
 }
 
-#define IQK_LTE_WRITE_VAL 0x00007700
+#define IQK_LTE_WRITE_VAL_8703B 0x00007700
 #define IQK_DELAY_TIME_8703B 4
 #define IQK_DELAY_STEP 1
 
@@ -1102,7 +1102,7 @@ static void rtw8703b_iqk_one_shot(struct rtw_dev *rtwdev, bool tx)
 {
 	/* enter IQK mode */
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, EN_IQK);
-	rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL);
+	rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL_8703B);
 
 	/* One shot, LOK & IQK */
 	rtw_write32(rtwdev, REG_IQK_AGC_PTS_11N, 0xf9000000);
@@ -1335,7 +1335,7 @@ void rtw8703b_iqk_one_round(struct rtw_dev *rtwdev, s32 result[][IQK_NR], u8 t,
 	rtw_dbg(rtwdev, RTW_DBG_RFK,
 		"[IQK] IQ Calibration for 1T1R_S0/S1 for %d times\n", t);
 
-	rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL);
+	rtw8723x_iqk_path_adda_on(rtwdev, ADDA_ON_VAL_8703B);
 	rtw8703b_iqk_config_mac(rtwdev, backup);
 	rtw_write32_mask(rtwdev, REG_CCK_ANT_SEL_11N, 0x0f000000, 0xf);
 	rtw_write32(rtwdev, REG_BB_RX_PATH_11N, 0x03a05600);
@@ -1456,7 +1456,7 @@ static void rtw8703b_phy_calibration(struct rtw_dev *rtwdev)
 
 	for (i = IQK_ROUND_0; i <= IQK_ROUND_2; i++) {
 		rtw8723x_iqk_config_path_ctrl(rtwdev);
-		rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL);
+		rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL_8703B);
 
 		rtw8703b_iqk_one_round(rtwdev, result, i, &backup);
 
