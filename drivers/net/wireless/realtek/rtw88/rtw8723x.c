@@ -63,11 +63,11 @@ static void __rtw8723x_lck(struct rtw_dev *rtwdev)
 		rtw_write8(rtwdev, REG_TXPAUSE, 0x00);
 }
 
-#define DBG_EFUSE_VAL(rtwdev, map, name)		 \
-	rtw_dbg(rtwdev, RTW_DBG_EFUSE, # name "=0x%x\n", \
+#define DBG_EFUSE_VAL(rtwdev, map, name)			\
+	rtw_dbg(rtwdev, RTW_DBG_EFUSE, # name "=0x%02x\n",	\
 		(map)->name)
-#define DBG_EFUSE_2BYTE(rtwdev, map, name)		   \
-	rtw_dbg(rtwdev, RTW_DBG_EFUSE, # name "=0x%x%x\n", \
+#define DBG_EFUSE_2BYTE(rtwdev, map, name)			\
+	rtw_dbg(rtwdev, RTW_DBG_EFUSE, # name "=0x%02x%02x\n",	\
 		(map)->name[0], (map)->name[1])
 
 static void rtw8723xe_efuse_debug(struct rtw_dev *rtwdev,
