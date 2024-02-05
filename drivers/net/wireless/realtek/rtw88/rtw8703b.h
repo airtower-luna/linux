@@ -48,8 +48,7 @@ extern const struct rtw_chip_info rtw8703b_hw_spec;
 #define REG_OFDM0_A_TX_AFE 0x0c84
 #define REG_TXIQK_MATRIXB_LSB2_11N 0x0c9c
 #define REG_OFDM0_TX_PSD_NOISE 0x0ce4  /* TX pseudo noise weighting */
-/* is != 0 when IQK is done */
-#define REG_IQK_RDY 0x0e90
+#define REG_IQK_RDY 0x0e90  /* is != 0 when IQK is done */
 
 /* RF registers */
 #define RF_RCK1 0x1E
