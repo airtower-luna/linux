@@ -63,10 +63,10 @@ static void __rtw8723x_lck(struct rtw_dev *rtwdev)
 		rtw_write8(rtwdev, REG_TXPAUSE, 0x00);
 }
 
-#define DBG_EFUSE_VAL(map, name)			 \
+#define DBG_EFUSE_VAL(rtwdev, map, name)		 \
 	rtw_dbg(rtwdev, RTW_DBG_EFUSE, # name "=0x%x\n", \
 		(map)->name)
-#define DBG_EFUSE_2BYTE(map, name)			   \
+#define DBG_EFUSE_2BYTE(rtwdev, map, name)		   \
 	rtw_dbg(rtwdev, RTW_DBG_EFUSE, # name "=0x%x%x\n", \
 		(map)->name[0], (map)->name[1])
 
@@ -74,18 +74,18 @@ static void rtw8723xe_efuse_debug(struct rtw_dev *rtwdev,
 				  struct rtw8723x_efuse *map)
 {
 	rtw_dbg(rtwdev, RTW_DBG_EFUSE, "mac_addr=%pM\n", map->e.mac_addr);
-	DBG_EFUSE_2BYTE(map, e.vendor_id);
-	DBG_EFUSE_2BYTE(map, e.device_id);
-	DBG_EFUSE_2BYTE(map, e.sub_vendor_id);
-	DBG_EFUSE_2BYTE(map, e.sub_device_id);
+	DBG_EFUSE_2BYTE(rtwdev, map, e.vendor_id);
+	DBG_EFUSE_2BYTE(rtwdev, map, e.device_id);
+	DBG_EFUSE_2BYTE(rtwdev, map, e.sub_vendor_id);
+	DBG_EFUSE_2BYTE(rtwdev, map, e.sub_device_id);
 }
 
 static void rtw8723xu_efuse_debug(struct rtw_dev *rtwdev,
 				  struct rtw8723x_efuse *map)
 {
-	DBG_EFUSE_2BYTE(map, u.vendor_id);
-	DBG_EFUSE_2BYTE(map, u.product_id);
-	DBG_EFUSE_VAL(map, u.usb_option);
+	DBG_EFUSE_2BYTE(rtwdev, map, u.vendor_id);
+	DBG_EFUSE_2BYTE(rtwdev, map, u.product_id);
+	DBG_EFUSE_VAL(rtwdev, map, u.usb_option);
 	rtw_dbg(rtwdev, RTW_DBG_EFUSE, "mac_addr=%pM\n", map->u.mac_addr);
 }
 
@@ -183,26 +183,26 @@ static void efuse_debug_dump(struct rtw_dev *rtwdev,
 	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 16, 1,
 		       (u8 *)map, sizeof(struct rtw8723x_efuse), false);
 	rtw_dbg(rtwdev, RTW_DBG_EFUSE, "Parsed rtw8723x EFUSE data:\n");
-	DBG_EFUSE_VAL(map, rtl_id);
-	DBG_EFUSE_VAL(map, afe);
+	DBG_EFUSE_VAL(rtwdev, map, rtl_id);
+	DBG_EFUSE_VAL(rtwdev, map, afe);
 	rtw8723x_debug_txpwr_limit(rtwdev, map->txpwr_idx_table, 4);
-	DBG_EFUSE_VAL(map, channel_plan);
-	DBG_EFUSE_VAL(map, xtal_k);
-	DBG_EFUSE_VAL(map, thermal_meter);
-	DBG_EFUSE_VAL(map, iqk_lck);
-	DBG_EFUSE_VAL(map, pa_type);
-	DBG_EFUSE_2BYTE(map, lna_type_2g);
-	DBG_EFUSE_2BYTE(map, lna_type_5g);
-	DBG_EFUSE_VAL(map, rf_board_option);
-	DBG_EFUSE_VAL(map, rf_feature_option);
-	DBG_EFUSE_VAL(map, rf_bt_setting);
-	DBG_EFUSE_VAL(map, eeprom_version);
-	DBG_EFUSE_VAL(map, eeprom_customer_id);
-	DBG_EFUSE_VAL(map, tx_bb_swing_setting_2g);
-	DBG_EFUSE_VAL(map, tx_pwr_calibrate_rate);
-	DBG_EFUSE_VAL(map, rf_antenna_option);
-	DBG_EFUSE_VAL(map, rfe_option);
-	DBG_EFUSE_2BYTE(map, country_code);
+	DBG_EFUSE_VAL(rtwdev, map, channel_plan);
+	DBG_EFUSE_VAL(rtwdev, map, xtal_k);
+	DBG_EFUSE_VAL(rtwdev, map, thermal_meter);
+	DBG_EFUSE_VAL(rtwdev, map, iqk_lck);
+	DBG_EFUSE_VAL(rtwdev, map, pa_type);
+	DBG_EFUSE_2BYTE(rtwdev, map, lna_type_2g);
+	DBG_EFUSE_2BYTE(rtwdev, map, lna_type_5g);
+	DBG_EFUSE_VAL(rtwdev, map, rf_board_option);
+	DBG_EFUSE_VAL(rtwdev, map, rf_feature_option);
+	DBG_EFUSE_VAL(rtwdev, map, rf_bt_setting);
+	DBG_EFUSE_VAL(rtwdev, map, eeprom_version);
+	DBG_EFUSE_VAL(rtwdev, map, eeprom_customer_id);
+	DBG_EFUSE_VAL(rtwdev, map, tx_bb_swing_setting_2g);
+	DBG_EFUSE_VAL(rtwdev, map, tx_pwr_calibrate_rate);
+	DBG_EFUSE_VAL(rtwdev, map, rf_antenna_option);
+	DBG_EFUSE_VAL(rtwdev, map, rfe_option);
+	DBG_EFUSE_2BYTE(rtwdev, map, country_code);
 
 	switch (rtw_hci_type(rtwdev)) {
 	case RTW_HCI_TYPE_PCIE:
