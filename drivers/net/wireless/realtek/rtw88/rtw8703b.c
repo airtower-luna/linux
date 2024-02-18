@@ -539,6 +539,22 @@ static const u8 rtw8703b_txpwr_idx_table[] = {
 	0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x02
 };
 
+static void try_mac_from_devicetree(struct rtw_dev *rtwdev)
+{
+	struct device_node *node = rtwdev->dev->of_node;
+	struct rtw_efuse *efuse = &rtwdev->efuse;
+	int ret;
+
+	if (node) {
+		ret = of_get_mac_address(node, efuse->addr);
+		if (ret == 0) {
+			rtw_dbg(rtwdev, RTW_DBG_EFUSE,
+				"got wifi mac address from DT: %pM\n",
+				efuse->addr);
+		}
+	}
+}
+
 #define DBG_EFUSE_FIX(rtwdev, name)					\
 	rtw_dbg(rtwdev, RTW_DBG_EFUSE, "Fixed invalid EFUSE value: "	\
 		# name "=0x%x\n", rtwdev->efuse.name)
@@ -554,21 +570,9 @@ static int rtw8703b_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
 	if (ret != 0)
 		return ret;
 
-#ifdef CONFIG_OF
-	/* Prefer MAC from DT, if available. On some devices like the
-	 * Pinephone that might be the only way to get a valid MAC.
-	 */
-	struct device_node *node = rtwdev->dev->of_node;
-
-	if (node) {
-		ret = of_get_mac_address(node, efuse->addr);
-		if (ret == 0) {
-			rtw_dbg(rtwdev, RTW_DBG_EFUSE,
-				"got wifi mac address from DT: %pM\n",
-				efuse->addr);
-		}
+	if (!is_valid_ether_addr(efuse->addr)) {
+		try_mac_from_devicetree(rtwdev);
 	}
-#endif /* CONFIG_OF */
 
 	/* If TX power index table in EFUSE is invalid, fall back to
 	 * built-in table.
