@@ -1094,10 +1094,14 @@ void rtw8703b_iqk_config_mac(struct rtw_dev *rtwdev,
 
 #define IQK_LTE_WRITE_VAL_8703B 0x00007700
 #define IQK_DELAY_TIME_8703B 4
-#define IQK_DELAY_STEP 1
 
 static void rtw8703b_iqk_one_shot(struct rtw_dev *rtwdev, bool tx)
 {
+	u32 regval;
+	ktime_t t;
+	s64 dur;
+	int ret;
+
 	/* enter IQK mode */
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, EN_IQK);
 	rtw8723x_iqk_config_lte_path_gnt(rtwdev, IQK_LTE_WRITE_VAL_8703B);
@@ -1106,22 +1110,20 @@ static void rtw8703b_iqk_one_shot(struct rtw_dev *rtwdev, bool tx)
 	rtw_write32(rtwdev, REG_IQK_AGC_PTS_11N, 0xf9000000);
 	rtw_write32(rtwdev, REG_IQK_AGC_PTS_11N, 0xf8000000);
 
-	/* This is very similar to check_hw_ready, but the exact
-	 * "done" value isn't known, just != 0
-	 */
-	mdelay(IQK_DELAY_TIME_8703B);
-	for (int wait = 0; wait < 20; wait++) {
-		mdelay(IQK_DELAY_STEP);
-		if (rtw_read32(rtwdev, REG_IQK_RDY) != 0) {
-			rtw_dbg(rtwdev, RTW_DBG_RFK,
-				"[IQK] %s done after %dms",
-				tx ? "TX" : "RX",
-				(wait + 1) * IQK_DELAY_STEP
-				+ IQK_DELAY_TIME_8703B);
-			return;
-		}
-	}
-	rtw_warn(rtwdev, "A %s IQK isn't done\n", tx ? "TX" : "RX");
+	t = ktime_get();
+	msleep(IQK_DELAY_TIME_8703B);
+	ret = read_poll_timeout(rtw_read32, regval, regval != 0, 1000,
+				100000, false, rtwdev,
+				REG_IQK_RDY);
+	dur = ktime_us_delta(ktime_get(), t);
+
+	if (ret)
+		rtw_warn(rtwdev, "[IQK] %s timed out after %lldus!\n",
+			 tx ? "TX" : "RX", dur);
+	else
+		rtw_dbg(rtwdev, RTW_DBG_RFK,
+			"[IQK] %s done after %lldus\n",
+			tx ? "TX" : "RX", dur);
 }
 
 static void rtw8703b_iqk_txrx_path_post(struct rtw_dev *rtwdev,
