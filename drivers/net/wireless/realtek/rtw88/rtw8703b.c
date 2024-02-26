@@ -971,18 +971,20 @@ static s8 get_cck_rx_pwr(struct rtw_dev *rtwdev, u8 lna_idx, u8 vga_idx)
 	return lna_gain - 2 * vga_idx;
 }
 
-static void query_phy_status_cck(struct rtw_dev *rtwdev, u8 *phy_status,
+static void query_phy_status_cck(struct rtw_dev *rtwdev, u8 *phy_raw,
 				 struct rtw_rx_pkt_stat *pkt_stat)
 {
-	u8 vga_idx = GET_PHY_STAT_VGA(phy_status);
-	u8 lna_idx;
+	struct phy_status_8703b *phy_status = (struct phy_status_8703b*) phy_raw;
+	u8 vga_idx = phy_status->cck_agc_rpt_ofdm_cfosho_a & VGA_BITS;
+	u8 lna_idx = phy_status->cck_agc_rpt_ofdm_cfosho_a & LNA_L_BITS;
 	s8 rx_power;
 
 	if (rtwdev->dm_info.rx_cck_agc_report_type == 1)
-		lna_idx = FIELD_PREP(BIT_LNA_H_MASK, GET_PHY_STAT_LNA_H(phy_status))
-			| FIELD_PREP(BIT_LNA_L_MASK, GET_PHY_STAT_LNA_L(phy_status));
+		lna_idx = FIELD_PREP(BIT_LNA_H_MASK,
+				     phy_status->cck_rpt_b_ofdm_cfosho_b & LNA_H_BIT)
+			| FIELD_PREP(BIT_LNA_L_MASK, lna_idx);
 	else
-		lna_idx = FIELD_PREP(BIT_LNA_L_MASK, GET_PHY_STAT_LNA_L(phy_status));
+		lna_idx = FIELD_PREP(BIT_LNA_L_MASK, lna_idx);
 	rx_power = get_cck_rx_pwr(rtwdev, lna_idx, vga_idx);
 
 	pkt_stat->rx_power[RF_PATH_A] = rx_power;
@@ -991,23 +993,24 @@ static void query_phy_status_cck(struct rtw_dev *rtwdev, u8 *phy_status,
 	pkt_stat->signal_power = rx_power;
 }
 
-static void query_phy_status_ofdm(struct rtw_dev *rtwdev, u8 *phy_status,
+static void query_phy_status_ofdm(struct rtw_dev *rtwdev, u8 *phy_raw,
 				  struct rtw_rx_pkt_stat *pkt_stat)
 {
+	struct phy_status_8703b *phy_status = (struct phy_status_8703b*) phy_raw;
 	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
 	s8 val_s8;
 
-	val_s8 = GET_PHY_STAT_AGC_GAIN_A(phy_status) & 0x3F;
+	val_s8 = phy_status->path_agc[RF_PATH_A].gain & 0x3F;
 	pkt_stat->rx_power[RF_PATH_A] = (val_s8 * 2) - 110;
 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
-	pkt_stat->rx_snr[RF_PATH_A] = GET_PHY_STAT_RXSNR_A(phy_status);
+	pkt_stat->rx_snr[RF_PATH_A] = (s8)(phy_status->path_rxsnr[RF_PATH_A] / 2);
 
 	/* signal power reported by HW */
-	val_s8 = GET_PHY_STAT_PWDB(phy_status) >> 1;
+	val_s8 = phy_status->cck_sig_qual_ofdm_pwdb_all >> 1;
 	pkt_stat->signal_power = (val_s8 & 0x7f) - 110;
 
-	pkt_stat->rx_evm[RF_PATH_A] = GET_PHY_STAT_RXEVM_A(phy_status);
-	pkt_stat->cfo_tail[RF_PATH_A] = GET_PHY_STAT_CFO_TAIL_A(phy_status);
+	pkt_stat->rx_evm[RF_PATH_A] = phy_status->stream_rxevm[RF_PATH_A];
+	pkt_stat->cfo_tail[RF_PATH_A] = phy_status->path_cfotail[RF_PATH_A];
 
 	dm_info->curr_rx_rate = pkt_stat->rate;
 	dm_info->rssi[RF_PATH_A] = pkt_stat->rssi;

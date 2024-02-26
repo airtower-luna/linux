@@ -4,30 +4,72 @@
 #ifndef __RTW8703B_H__
 #define __RTW8703B_H__
 
+#include <linux/types.h>
+#include <linux/compiler_attributes.h>
+
 extern const struct rtw_chip_info rtw8703b_hw_spec;
 
 /* phy status parsing */
-#define GET_PHY_STAT_AGC_GAIN_A(phy_stat)                                   \
-	(le32_get_bits(*((__le32 *)(phy_stat) + 0x00), GENMASK(6, 0)))
-
-#define GET_PHY_STAT_PWDB(phy_stat)                                         \
-	le32_get_bits(*((__le32 *)(phy_stat) + 0x01), GENMASK(7, 0))
-#define GET_PHY_STAT_VGA(phy_stat)                                          \
-	le32_get_bits(*((__le32 *)(phy_stat) + 0x01), GENMASK(12, 8))
-#define GET_PHY_STAT_LNA_L(phy_stat)                                        \
-	le32_get_bits(*((__le32 *)(phy_stat) + 0x01), GENMASK(15, 13))
-/* the high LNA stat bit if 4 bit format is used */
-#define GET_PHY_STAT_LNA_H(phy_stat)                                        \
-	le32_get_bits(*((__le32 *)(phy_stat) + 0x01), BIT(23))
+#define VGA_BITS GENMASK(4, 0)
+#define LNA_L_BITS GENMASK(7, 5)
+#define LNA_H_BIT BIT(7)
+/* masks for assembling LNA index from high and low bits */
 #define BIT_LNA_H_MASK BIT(3)
 #define BIT_LNA_L_MASK GENMASK(2, 0)
 
-#define GET_PHY_STAT_CFO_TAIL_A(phy_stat)                                   \
-	(le32_get_bits(*((__le32 *)(phy_stat) + 0x02), GENMASK(15, 8)))
-#define GET_PHY_STAT_RXEVM_A(phy_stat)                                      \
-	(le32_get_bits(*((__le32 *)(phy_stat) + 0x03), GENMASK(15, 8)))
-#define GET_PHY_STAT_RXSNR_A(phy_stat)                                      \
-	(le32_get_bits(*((__le32 *)(phy_stat) + 0x03), GENMASK(31, 24)))
+struct phy_rx_agc_info {
+#ifdef __LITTLE_ENDIAN
+	u8 gain: 7;
+	u8 trsw: 1;
+#else
+	u8 trsw: 1;
+	u8 gain: 7;
+#endif
+} __packed;
+
+/* This struct is called phy_status_rpt_8192cd in the vendor driver,
+ * there might be potential to share it with drivers for other chips
+ * of the same generation.
+ */
+struct phy_status_8703b {
+	struct phy_rx_agc_info path_agc[2];
+	u8 ch_corr[2];
+	u8 cck_sig_qual_ofdm_pwdb_all;
+	/* for CCK: bits 0:4: VGA index, bits 5:7: LNA index (low) */
+	u8 cck_agc_rpt_ofdm_cfosho_a;
+	/* for CCK: bit 7 is high bit of LNA index if long report type */
+	u8 cck_rpt_b_ofdm_cfosho_b;
+	u8 reserved_1;
+	u8 noise_power_db_msb;
+	s8 path_cfotail[2];
+	u8 pcts_mask[2];
+	s8 stream_rxevm[2];
+	u8 path_rxsnr[2];
+	u8 noise_power_db_lsb;
+	u8 reserved_2[3];
+	u8 stream_csi[2];
+	u8 stream_target_csi[2];
+	s8 sig_evm;
+	u8 reserved_3;
+
+#ifdef __LITTLE_ENDIAN
+	u8 antsel_rx_keep_2: 1;
+	u8 sgi_en: 1;
+	u8 rxsc: 2;
+	u8 idle_long: 1;
+	u8 r_ant_train_en: 1;
+	u8 ant_sel_b: 1;
+	u8 ant_sel: 1;
+#else /* __BIG_ENDIAN */
+	u8 ant_sel: 1;
+	u8 ant_sel_b: 1;
+	u8 r_ant_train_en: 1;
+	u8 idle_long: 1;
+	u8 rxsc: 2;
+	u8 sgi_en: 1;
+	u8 antsel_rx_keep_2: 1;
+#endif
+} __packed;
 
 /* Baseband registers */
 #define REG_BB_PWR_SAV5_11N 0x0818
