@@ -36,11 +36,11 @@
 #define RX_DRV_INFO_SZ_UNIT_8703B 8
 
 #define TRANS_SEQ_END			\
-	{0xFFFF,			\
-	 RTW_PWR_CUT_ALL_MSK,		\
-	 RTW_PWR_INTF_ALL_MSK,		\
-	 0,				\
-	 RTW_PWR_CMD_END, 0, 0}
+	0xFFFF,				\
+	RTW_PWR_CUT_ALL_MSK,		\
+	RTW_PWR_INTF_ALL_MSK,		\
+	0,				\
+	RTW_PWR_CMD_END, 0, 0
 
 /* rssi in percentage % (dbm = % - 100) */
 /* These are used to select simple signal quality levels, might need
@@ -189,7 +189,7 @@ static const struct rtw_pwr_seq_cmd trans_pre_enable_8703b[] = {
 	 RTW_PWR_INTF_ALL_MSK,
 	 RTW_PWR_ADDR_MAC,
 	 RTW_PWR_CMD_WRITE, 0xff, 0},
-	TRANS_SEQ_END,
+	{TRANS_SEQ_END},
 };
 
 static const struct rtw_pwr_seq_cmd trans_carddis_to_cardemu_8703b[] = {
@@ -198,7 +198,7 @@ static const struct rtw_pwr_seq_cmd trans_carddis_to_cardemu_8703b[] = {
 	 RTW_PWR_INTF_ALL_MSK,
 	 RTW_PWR_ADDR_MAC,
 	 RTW_PWR_CMD_WRITE, BIT(7), 0},
-	TRANS_SEQ_END,
+	{TRANS_SEQ_END},
 };
 
 static const struct rtw_pwr_seq_cmd trans_cardemu_to_carddis_8703b[] = {
@@ -222,7 +222,7 @@ static const struct rtw_pwr_seq_cmd trans_cardemu_to_carddis_8703b[] = {
 	 RTW_PWR_INTF_ALL_MSK,
 	 RTW_PWR_ADDR_MAC,
 	 RTW_PWR_CMD_WRITE, BIT(7), BIT(7)},
-	TRANS_SEQ_END,
+	{TRANS_SEQ_END},
 };
 
 static const struct rtw_pwr_seq_cmd trans_cardemu_to_act_8703b[] = {
@@ -342,7 +342,7 @@ static const struct rtw_pwr_seq_cmd trans_cardemu_to_act_8703b[] = {
 	 RTW_PWR_INTF_ALL_MSK,
 	 RTW_PWR_ADDR_MAC,
 	 RTW_PWR_CMD_WRITE, BIT(6), BIT(6)},
-	TRANS_SEQ_END,
+	{TRANS_SEQ_END},
 };
 
 static const struct rtw_pwr_seq_cmd trans_act_to_cardemu_8703b[] = {
@@ -386,7 +386,7 @@ static const struct rtw_pwr_seq_cmd trans_act_to_cardemu_8703b[] = {
 	 RTW_PWR_INTF_USB_MSK | RTW_PWR_INTF_SDIO_MSK,
 	 RTW_PWR_ADDR_MAC,
 	 RTW_PWR_CMD_WRITE, BIT(0), 0},
-	TRANS_SEQ_END,
+	{TRANS_SEQ_END},
 };
 
 static const struct rtw_pwr_seq_cmd trans_act_to_reset_mcu_8703b[] = {
@@ -412,7 +412,7 @@ static const struct rtw_pwr_seq_cmd trans_act_to_reset_mcu_8703b[] = {
 	 RTW_PWR_INTF_SDIO_MSK,
 	 RTW_PWR_ADDR_MAC,
 	 RTW_PWR_CMD_WRITE, BIT(0), 1},
-	TRANS_SEQ_END,
+	{TRANS_SEQ_END},
 };
 
 static const struct rtw_pwr_seq_cmd trans_act_to_lps_8703b[] = {
@@ -481,7 +481,7 @@ static const struct rtw_pwr_seq_cmd trans_act_to_lps_8703b[] = {
 	 RTW_PWR_INTF_ALL_MSK,
 	 RTW_PWR_ADDR_MAC,
 	 RTW_PWR_CMD_WRITE, BIT(5), BIT(5)},
-	TRANS_SEQ_END,
+	{TRANS_SEQ_END},
 };
 
 static const struct rtw_pwr_seq_cmd *card_enable_flow_8703b[] = {
