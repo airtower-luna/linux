@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "phy.h"
+#include "rtw8703b_tables.h"
 
 static const struct rtw_phy_pg_cfg_pair rtw8703b_bb_pg[] = {
 	{ 0, 0, 0, 0x00000e08, 0x0000ff00, 0x00003200, },
