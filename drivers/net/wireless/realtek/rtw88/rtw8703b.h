@@ -4,8 +4,7 @@
 #ifndef __RTW8703B_H__
 #define __RTW8703B_H__
 
-#include <linux/types.h>
-#include <linux/compiler_attributes.h>
+#include "rtw8723x.h"
 
 extern const struct rtw_chip_info rtw8703b_hw_spec;
 
