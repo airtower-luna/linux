@@ -13,9 +13,6 @@
 #include "rtw8703b_tables.h"
 #include "rtw8723x.h"
 
-#define GET_RX_DESC_BW(rxdesc)                                              \
-	(le32_get_bits(*((__le32 *)(rxdesc) + 0x04), GENMASK(31, 24)))
-
 #define BIT_MASK_TXQ_INIT (BIT(7))
 #define WLAN_RL_VAL 0x3030
 /* disable BAR */
